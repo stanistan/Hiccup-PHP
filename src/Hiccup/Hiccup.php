@@ -11,12 +11,11 @@ class Hiccup {
 			return self::make($args);
 		}
 
-		$text = '';
-		foreach ($args as $arg) {
-			$text .= self::make($arg);
-		}
-
-		return $text;
+		return array_reduce($args, function($text, $arg) {
+			return $text . ((is_array($arg[0]))
+				? Hiccup::render($arg)
+				: Hiccup::make($arg));
+		});
 
 	}
 
@@ -35,49 +34,34 @@ class Hiccup {
 
 	public static function prep($arr) {
 
+		$remove_first = function($str) { return substr($str, 1); };
+
 		$tag = strtolower(array_shift($arr));
 		$properties = array();
 		$children = array();
 
-
-		$remove_first = function($str) { return substr($str, 1); };
-		preg_match_all('/(.|#){0,1}\w+/i', $tag, $matches);	
-		$matches = $matches[0];
-
-		foreach ($matches as $m) {
-
-			if (!$m) continue;
-
+		preg_match_all('/(.|#){0,1}\w+/i', $tag, $matches);			
+		foreach ($matches[0] as $m) {
 			if (preg_match('/#/', $m)) {
 				$properties['id'] = $remove_first($m);
-				continue;
-			}
-
-			if (preg_match('/\./', $m)) {
+			} else if (preg_match('/\./', $m)) {
 				$properties['class'] .= ' ' . $remove_first($m);
-				continue;
+			} else if ($m) {
+				$tag = $m;
 			}
-			
-			$tag = $m;
-
 		}
 
 		foreach ($arr as $v) {
-			
 			if (self::is_assoc($v)) {
 				$properties = array_merge($properties, $v);
-				continue;
+			} else {
+				$children[] = $v;
 			}
-
-			$children[] = $v;
-
 		}
-
-		$properties = array_map('trim', $properties);
 
 		return array(
 			'tag' => $tag,
-			'properties' => $properties,
+			'properties' => array_map('trim', $properties),
 			'children' => $children
 		);
 
