@@ -49,9 +49,8 @@ $tests = array(
 
 
 foreach ($tests as $name => $t) {
-	echo Hiccup::render('h1', $name);
+	echo html('h1', $name);
 	foreach ($t as $test) {
-		echo Hiccup::render($test);			
+		echo html($test);			
 	}
 }
-

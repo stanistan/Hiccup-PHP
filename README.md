@@ -10,18 +10,20 @@ Why not use short array syntax? (Obviously it works with normal array syntax.)
 
 <?php
 
-Hiccup::render('p'); 
+namespace Hiccup;
+
+html('p'); 
 // <p></p>
 
-Hiccup::render('p', 'some text');
-Hiccup::render(
+html('p', 'some text');
+html(
   ['p', 'some text']
 );
 
 // <p>some text</p>
 // <p>some text</p>
 
-Hiccup::render(
+html(
   'div#container',
   [ 'p', 'text',
     [ 'ul', 
@@ -49,7 +51,7 @@ Can create any kind of tag, as well as add any kind of attribute:
 ```php
 <?php
 
-Hiccup::render('some-tag', 
+html('some-tag', 
   ['my-attr' => 'any attr'],
   ['div#asdf', ['inner-attr' => 'something_else'], 'text']
 );
@@ -69,6 +71,6 @@ Hiccup::render('some-tag',
 
 These are no line breaks / indentation in the generated HTML, it isn't prettily formatted.
 
-Maybe will add this in the future.
+Run the test to see the output.
 
-  
+Maybe will add this in the future.
