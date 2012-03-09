@@ -2,110 +2,98 @@
 
 namespace Hiccup;
 
-class Hiccup {
+function html() {
+	$args = func_get_args();
+	$num_args = func_num_args();
+	return (is_string($args[0]))
+		? _render($args)
+		: array_reduce($args, function($text, $arg) {
+			return $text . ((is_array($arg[0]))
+				? html($arg)
+				: _render($arg));
+		 });
+}
 
-	// void elements from
-	// http://dev.w3.org/html5/spec/Overview.html#void-elements
-	public static $void_elements = array(
+function _tagAttributes($attrs) {
+	$text = '';
+	foreach ($attrs as $k => $v) {
+		$text .= sprintf(' %s="%s"', $k, htmlentities($v));
+	}
+	return $text;
+}
+
+function _removeFirstLetter($str) {
+	return substr($str, 1);
+}
+
+function _getVoidEls() {
+	return array(
 		'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen',
 		'link', 'meta', 'param', 'source', 'track', 'wbr'
 	);
+}
 
-	public static function render() {
-		
-		$args = func_get_args();
-		$num_args = func_num_args();
+function _getMatches($tag) {
+	$pattern = '/(.|#){0,1}\w+/i';
+	preg_match_all($pattern, $tag, $matches);
+	return $matches[0];
+}
 
-		if (is_string($args[0])) {
-			return self::make($args);
-		}
+function is_assoc($arr) {
+	if (!is_array($arr)) return false;
+	return (count(array_filter(array_keys($arr), 'is_string')) == count($arr));
+}
 
-		return array_reduce($args, function($text, $arg) {
-			return $text . ((is_array($arg[0]))
-				? Hiccup::render($arg)
-				: Hiccup::make($arg));
-		});
+function _prep($arr) {
 
-	}
+	$tag = strtolower(array_shift($arr));
+	$attrs = array();
+	$subs = array();
 
-	public static function is_assoc($arr) {
-		if (!is_array($arr)) return false;
-		return (count(array_filter(array_keys($arr), 'is_string')) == count($arr));
-	}
+	$patterns = array(
+		'/#/' 	=>  function($m) use(&$attrs) { $attrs['id'] = $m; }, 	
+		'/\./'	=>	function($m) use(&$attrs) { $attrs['class'] .= ' ' . $m; } 	
+	);
 
-	public static function innerTag($inner) {
-		$text = '';
-		foreach ($inner as $k => $v) {
-			$text .= sprintf(' %s="%s"', $k, htmlentities($v) );
-		}
-		return $text;
-	}
-
-	public static function prep($arr) {
-
-		$remove_first = function($str) { return substr($str, 1); };
-
-		$tag = strtolower(array_shift($arr));
-		$properties = array();
-		$children = array();
-
-		preg_match_all('/(.|#){0,1}\w+/i', $tag, $matches);			
-		foreach ($matches[0] as $m) {
-			if (preg_match('/#/', $m)) {
-				$properties['id'] = $remove_first($m);
-			} else if (preg_match('/\./', $m)) {
-				$properties['class'] .= ' ' . $remove_first($m);
-			} else if ($m) {
-				$tag = $m;
+	foreach (_getMatches($tag) as $match) {
+		if (!$match) continue;
+		foreach (array_keys($patterns) as $pattern) {
+			if (preg_match($pattern, $match)) {
+				$patterns[$pattern](_removeFirstLetter($match));
+				continue 2;
 			}
 		}
-
-		foreach ($arr as $v) {
-			if (self::is_assoc($v)) {
-				$properties = array_merge($properties, $v);
-			} else {
-				$children[] = $v;
-			}
-		}
-
-		return array(
-			'tag' => $tag,
-			'properties' => array_map('trim', $properties),
-			'children' => $children
-		);
-
+		$tag = $match;
 	}
 
-	public static function innerHTML($children) {
-		return array_reduce($children, function($whole, $child) {
-			$child = (is_array($child)) ? Hiccup::make($child) : $child;
-			return $whole . $child;
-		});
+	foreach ($arr as $piece) {
+		if (is_assoc($piece)) $attrs = array_merge($attrs, $piece);
+		else $subs[] = $piece;
 	}
 
-	public static function isVoidElement($tag) {
-		return (in_array($tag, self::$void_elements));
-	}
-
-	public static function make($arr) {
-		
-		$prepped = self::prep($arr);
-
-		$spr = array(
-			$prepped['tag'], 
-			self::innerTag($prepped['properties'])
-		);
-
-		if (self::isVoidElement($prepped['tag'])) {
-			return vsprintf('<%s%s />', $spr);
-		}
-
-		$spr = array_merge($spr, array(
-			self::innerHTML($prepped['children']),
-			$prepped['tag']
-		));
-
-		return vsprintf('<%s%s>%s</%s>', $spr);
-	}
+	return array(
+		'tag' => $tag,
+		'attrs' => $attrs,
+		'subs' => $subs
+	);
 
 }
+
+function _innerHTML($subs) {
+	return array_reduce($subs, function($all, $sub) {
+		return $all . ( (is_array($sub) )  ? _render($sub)  : $sub );
+	});
+}
+
+function _isVoidElement($tag) {
+	return (in_array($tag, _getVoidEls()));
+}
+
+function _render($arr) {
+	$pr = (object) _prep($arr);
+	$spr = array($pr->tag, _tagAttributes($pr->attrs));
+	if (_isVoidElement($pr->tag)) return vsprintf('<%s%s />', $spr);
+	$spr = array_merge($spr, array(_innerHTML($pr->subs), $pr->tag));
+	return vsprintf('<%s%s>%s</%s>', $spr);
+}
+
