@@ -1,6 +1,15 @@
 <?
 
+namespace Hiccup;
+
 class Hiccup {
+
+	// void elements from
+	// http://dev.w3.org/html5/spec/Overview.html#void-elements
+	public static $void_elements = array(
+		'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen',
+		'link', 'meta', 'param', 'source', 'track', 'wbr'
+	);
 
 	public static function render() {
 		
@@ -74,14 +83,29 @@ class Hiccup {
 		});
 	}
 
+	public static function isVoidElement($tag) {
+		return (in_array($tag, self::$void_elements));
+	}
+
 	public static function make($arr) {
+		
 		$prepped = self::prep($arr);
-		return vsprintf('<%s%s>%s</%s>', array(
-			$prepped['tag'],
-			self::innerTag($prepped['properties']),
+
+		$spr = array(
+			$prepped['tag'], 
+			self::innerTag($prepped['properties'])
+		);
+
+		if (self::isVoidElement($prepped['tag'])) {
+			return vsprintf('<%s%s />', $spr);
+		}
+
+		$spr = array_merge($spr, array(
 			self::innerHTML($prepped['children']),
 			$prepped['tag']
 		));
+
+		return vsprintf('<%s%s>%s</%s>', $spr);
 	}
 
 }

@@ -41,6 +41,7 @@ Hiccup::render(
   </div>
 */
 
+?>
 ```
 
 Can create any kind of tag, as well as add any kind of attribute:
@@ -61,17 +62,13 @@ Hiccup::render('some-tag',
   </some-tag>
 
 */
-
+?>
 ```
 
 #### Note: #
 
 These are no line breaks / indentation in the generated HTML, it isn't prettily formatted.
 
-### Todo: #
+Maybe will add this in the future.
 
-Utilized self closing tags where applicable.
-
-
-
-    
+  
