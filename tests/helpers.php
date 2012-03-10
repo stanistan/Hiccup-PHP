@@ -66,6 +66,10 @@ class testHelpers extends PHPUnit_Framework_TestCase {
 			\Hiccup\Element\ul('foo', 'bar', 'baz'),
 			html('ul', array('li', 'foo'), array('li', 'bar'), array('li', 'baz')));
 
+		$this->assertEquals(
+			\Hiccup\Element\ul('hi', array('class' => 'sup')),
+			'<ul class="sup"><li>hi</li></ul>');
+
 	}
 
 }

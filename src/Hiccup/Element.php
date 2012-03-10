@@ -42,8 +42,8 @@ function _list() {
 	$tag = array_shift($args);
 	$args = array_map(function($arr) use($tag) {
 		return (is_array($arr))
-			? (preg_match('/'.$tag.'/', $arr[0]))
-				? $r : array_merge(array($tag), $arr)
+			? (\Hiccup\is_assoc($arr) || !preg_match('/\bli\b/', $arr[0]))
+				? $arr  : array_merge(array('li'), $arr)
 			: array('li', $arr);
 	}, $args);
 	array_unshift($args, $tag);
