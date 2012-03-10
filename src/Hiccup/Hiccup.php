@@ -48,7 +48,7 @@ function _isSelfClosing($tag) {
 }
 
 function _getMatches($tag) {
-	$pattern = '/(.|#){0,1}\w+/i';
+	$pattern = '/(.|#){0,1}[\w-]+/i';
 	preg_match_all($pattern, $tag, $matches);
 	return $matches[0];
 }
@@ -56,6 +56,10 @@ function _getMatches($tag) {
 function is_assoc($arr) {
 	if (!is_array($arr)) return false;
 	return (count(array_filter(array_keys($arr), 'is_string')) == count($arr));
+}
+
+function is_closure($arg) {
+	return (is_object($arg) && is_callable($arg));
 }
 
 function _prep($arr) {
