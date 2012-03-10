@@ -69,6 +69,8 @@ function _prep($arr) {
 		'/\./'	=>	function($m) use(&$attrs) { $attrs['class'] .= ' ' . $m; } 	
 	);
 
+	$filter_nulls = function($r) { return (!is_null($r)); };
+
 	foreach (_getMatches($tag) as $match) {
 		if (!$match) continue;
 		foreach (array_keys($patterns) as $pattern) {
@@ -82,12 +84,22 @@ function _prep($arr) {
 
 	foreach ($arr as $piece) {
 		if (is_assoc($piece)) $attrs = array_merge($attrs, $piece);
-		else $subs[] = $piece;
+		else $subs[] = $piece;	
 	}
+
+	// check booleans
+	array_walk($attrs, function(&$val, $key) {
+		$val = (is_bool($val) || is_null($val))
+			? (!$val) ? null : $key
+			: trim($val);
+	});
+
+	// remove null values
+	$attrs = array_filter($attrs, $filter_nulls);
 
 	return array(
 		'tag' => strtolower($tag),
-		'attrs' => array_map('trim', $attrs),
+		'attrs' => $attrs,
 		'subs' => $subs
 	);
 
