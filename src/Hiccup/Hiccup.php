@@ -33,6 +33,20 @@ function _getVoidEls() {
 	);
 }
 
+function _isVoidElement($tag) {
+	return (in_array($tag, _getVoidEls()));
+}
+
+function _getSelfClosing() {
+	return array(
+		'text', 'p', 'xml'
+	);
+}
+
+function _isSelfClosing($tag) {
+	return (in_array($tag, _getSelfClosing()));
+}
+
 function _getMatches($tag) {
 	$pattern = '/(.|#){0,1}\w+/i';
 	preg_match_all($pattern, $tag, $matches);
@@ -46,7 +60,7 @@ function is_assoc($arr) {
 
 function _prep($arr) {
 
-	$tag = strtolower(array_shift($arr));
+	$tag = array_shift($arr);
 	$attrs = array();
 	$subs = array();
 
@@ -72,8 +86,8 @@ function _prep($arr) {
 	}
 
 	return array(
-		'tag' => $tag,
-		'attrs' => $attrs,
+		'tag' => strtolower($tag),
+		'attrs' => array_map('trim', $attrs),
 		'subs' => $subs
 	);
 
@@ -85,14 +99,12 @@ function _innerHTML($subs) {
 	});
 }
 
-function _isVoidElement($tag) {
-	return (in_array($tag, _getVoidEls()));
-}
-
 function _render($arr) {
 	$pr = (object) _prep($arr);
 	$spr = array($pr->tag, _tagAttributes($pr->attrs));
-	if (_isVoidElement($pr->tag)) return vsprintf('<%s%s />', $spr);
+	if (_isVoidElement($pr->tag) || (!$pr->subs && _isSelfClosing($pr->tag))) {
+		return vsprintf('<%s%s />', $spr);
+	}
 	$spr = array_merge($spr, array(_innerHTML($pr->subs), $pr->tag));
 	return vsprintf('<%s%s>%s</%s>', $spr);
 }
