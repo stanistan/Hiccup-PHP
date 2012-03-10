@@ -97,8 +97,29 @@ class testCore extends PHPUnit_Framework_TestCase {
 			html('xml', array('a' => 1, 'b' => 2)),
 			'<xml a="1" b="2" />');
 
+		$this->assertEquals(
+			html('img', array('id' => 'foo')),
+			'<img id="foo" />');
 
+		$this->assertEquals(
+			html('img', array('id' => 'foo')),
+			html('img#foo'));
 
+		$this->assertEquals(
+			html('xml', array('id' => '"')),
+			'<xml id="&quot;" />');
+
+		$this->assertEquals(
+			html('input', array('type' => 'checkbox', 'checked' => true)),
+			'<input type="checkbox" checked="checked" />');
+
+		$this->assertEquals(
+			html('input', array('type' => 'checkbox', 'checked' => false)),
+			'<input type="checkbox" />');
+
+		$this->assertEquals(
+			html('span', array('class' => null), 'foo'),
+			'<span>foo</span>');
 	}
 
 
