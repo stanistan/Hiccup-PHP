@@ -2,10 +2,16 @@
 
 namespace Hiccup\Element;
 
+use \Hiccup;
+
+class Element { 
+
+}
+
 function javascriptTag() {
 	$args = func_get_args();
 	$arr = array('script', array('type' => 'text/javascript'), implode("\n", $args));
-	return \Hiccup\html($arr);
+	return Hiccup::html($arr);
 }
 
 function linkTo() {
