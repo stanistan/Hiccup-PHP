@@ -2,6 +2,10 @@
 
 namespace Hiccup;
 
+function html() {
+	return call_user_func_array(array('\Hiccup\Hiccup', 'html'), func_get_args());
+}
+
 class Hiccup {
 
 	function html() {
@@ -28,7 +32,7 @@ class Hiccup {
 
 	function _innerHTML($subs) {
 		return array_reduce($subs, function($all, $sub) {
-			return $all . ( (is_array($sub) )  ? self::_render($sub)  : $sub );
+			return $all . ( (is_array($sub) )  ? Hiccup::_render($sub)  : $sub );
 		});
 	}
 
@@ -126,6 +130,5 @@ class Hiccup {
 		);
 
 	}
-
 
 }

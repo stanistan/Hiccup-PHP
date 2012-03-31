@@ -1,8 +1,13 @@
 <?
 
+namespace Hiccup;
+
 require __DIR__ . '/../bootstrap.php';
 
-class testCore extends PHPUnit_Framework_TestCase {
+// to get teh atoloader to fetch \Hiccup\html
+new Hiccup;
+
+class testCore extends \PHPUnit_Framework_TestCase {
 	
 	public function testBasicTags() {
 		$this->assertEquals(
