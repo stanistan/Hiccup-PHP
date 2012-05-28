@@ -10,25 +10,26 @@ Why not use short array syntax? (Obviously it works with normal array syntax.)
 
 <?php
 
-namespace Hiccup;
+// this will include the file so that we can automatically just use the helper funciton \Hiccup\html
+new \Hiccup\Hiccup;
 
-html('p'); 
+\Hiccup\html('p'); 
 // <p></p>
 
-html('p', 'some text');
-html(
+\Hiccup\html('p', 'some text');
+\Hiccup\html(
   ['p', 'some text']
 );
 
 // <p>some text</p>
 // <p>some text</p>
 
-html(
+\Hiccup\html(
   'div#container',
-  [ 'p', 'text',
-    [ 'ul', 
-      [ 'li', 'item 1'],
-      [ 'li', 'item 2']
+  ['p', 'text',
+    ['ul', 
+      ['li', 'item 1'],
+      ['li', 'item 2']
     ]
   ]
 );
@@ -51,7 +52,7 @@ Can create any kind of tag, as well as add any kind of attribute:
 ```php
 <?php
 
-html('some-tag', 
+\Hiccup\html('some-tag', 
   ['my-attr' => 'any attr'],
   ['div#asdf', ['inner-attr' => 'something_else'], 'text']
 );
