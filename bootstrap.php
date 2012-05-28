@@ -1,6 +1,6 @@
-<?
+<?php
 
-require 'src/SplClassLoader.php';
+require __DIR__ . '/src/SplClassLoader.php';
 
-$loader = new SplClassLoader(null, __DIR__ .'/src');
+$loader = new SplClassLoader('Hiccup', __DIR__ .'/src');
 $loader->register();

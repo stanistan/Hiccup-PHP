@@ -1,131 +1,135 @@
-<?
+<?php
 
 namespace Hiccup;
 
 require __DIR__ . '/../bootstrap.php';
 
-// to get teh atoloader to fetch \Hiccup\html
+// to get the autoloader to fetch \Hiccup\html
 new Hiccup;
 
 class testCore extends \PHPUnit_Framework_TestCase {
-	
-	public function testBasicTags() {
-		$this->assertEquals(
-			html('div'), 
-			'<div></div>');
 
-		$this->assertEquals(
-			html(array('div')),
-			html('div'));
-	}  
+    public function testBasicTags()
+    {
+        $this->assertEquals(
+            html('div'),
+            '<div></div>');
 
-	public function testSyntaxSugar() {
-		$this->assertEquals(
-			html('div#foo'), 
-			'<div id="foo"></div>');
+        $this->assertEquals(
+            html(array('div')),
+            html('div'));
+    }
 
-		$this->assertEquals(
-			html('div.foo'),
-			 '<div class="foo"></div>');
+    public function testSyntaxSugar()
+    {
+        $this->assertEquals(
+            html('div#foo'),
+            '<div id="foo"></div>');
 
-		$this->assertEquals(
-			html('div.foo', 'bar', 'baz'),
-			'<div class="foo">barbaz</div>');
+        $this->assertEquals(
+            html('div.foo'),
+             '<div class="foo"></div>');
 
-		$this->assertEquals(
-			html('div.a.b'), 
-			'<div class="a b"></div>');
+        $this->assertEquals(
+            html('div.foo', 'bar', 'baz'),
+            '<div class="foo">barbaz</div>');
 
-		$this->assertEquals(
-			html('div.a.b.c'), 
-			'<div class="a b c"></div>');
+        $this->assertEquals(
+            html('div.a.b'),
+            '<div class="a b"></div>');
 
-		$this->assertEquals(
-			html('div#foo.bar.baz'), 
-			'<div id="foo" class="bar baz"></div>');
-	}
+        $this->assertEquals(
+            html('div.a.b.c'),
+            '<div class="a b c"></div>');
 
-	public function testEmptyTags() {
-		$this->assertEquals(
-			html('div'), 
-			'<div></div>');
+        $this->assertEquals(
+            html('div#foo.bar.baz'),
+            '<div id="foo" class="bar baz"></div>');
+    }
 
-		$this->assertEquals(
-			html('h1'),
-			'<h1></h1>');
+    public function testEmptyTags()
+    {
+        $this->assertEquals(
+            html('div'),
+            '<div></div>');
 
-		$this->assertEquals(
-			html('script'), 
-			'<script></script>');
+        $this->assertEquals(
+            html('h1'),
+            '<h1></h1>');
 
-		$this->assertEquals(
-			html('text'), 
-			'<text />');
+        $this->assertEquals(
+            html('script'),
+            '<script></script>');
 
-		$this->assertEquals(
-			html('a'), 
-			'<a></a>');
+        $this->assertEquals(
+            html('text'),
+            '<text />');
 
-		$this->assertEquals(
-			html('iframe'), 
-			'<iframe></iframe>');
-	}
+        $this->assertEquals(
+            html('a'),
+            '<a></a>');
 
-	public function testTagContents() {
-		$this->assertEquals(
-			html('text', 'Lorem Ipsum'), 
-			'<text>Lorem Ipsum</text>');
+        $this->assertEquals(
+            html('iframe'),
+            '<iframe></iframe>');
+    }
 
-		$this->assertEquals(
-			html('body', 'foo', 'bar'), 
-			'<body>foobar</body>');
+    public function testTagContents()
+    {
+        $this->assertEquals(
+            html('text', 'Lorem Ipsum'),
+            '<text>Lorem Ipsum</text>');
 
-		$this->assertEquals(
-			html('body', array('p'), array('br')), 
-			'<body><p /><br /></body>');
+        $this->assertEquals(
+            html('body', 'foo', 'bar'),
+            '<body>foobar</body>');
 
-		$this->assertEquals(
-			html('body', array('p', 'a'), array('p', 'b')), 
-			'<body><p>a</p><p>b</p></body>');
+        $this->assertEquals(
+            html('body', array('p'), array('br')),
+            '<body><p /><br /></body>');
 
-		$this->assertEquals(
-			html('p', array('span', array('a', 'foo'))),
-			'<p><span><a>foo</a></span></p>');
-	}
+        $this->assertEquals(
+            html('body', array('p', 'a'), array('p', 'b')),
+            '<body><p>a</p><p>b</p></body>');
 
-	public function testAttributes() {
-		$this->assertEquals(
-			html('xml', array()), 
-			'<xml />');
+        $this->assertEquals(
+            html('p', array('span', array('a', 'foo'))),
+            '<p><span><a>foo</a></span></p>');
+    }
 
-		$this->assertEquals(
-			html('xml', array('a' => 1, 'b' => 2)),
-			'<xml a="1" b="2" />');
+    public function testAttributes()
+    {
+        $this->assertEquals(
+            html('xml', array()),
+            '<xml />');
 
-		$this->assertEquals(
-			html('img', array('id' => 'foo')),
-			'<img id="foo" />');
+        $this->assertEquals(
+            html('xml', array('a' => 1, 'b' => 2)),
+            '<xml a="1" b="2" />');
 
-		$this->assertEquals(
-			html('img', array('id' => 'foo')),
-			html('img#foo'));
+        $this->assertEquals(
+            html('img', array('id' => 'foo')),
+            '<img id="foo" />');
 
-		$this->assertEquals(
-			html('xml', array('id' => '"')),
-			'<xml id="&quot;" />');
+        $this->assertEquals(
+            html('img', array('id' => 'foo')),
+            html('img#foo'));
 
-		$this->assertEquals(
-			html('input', array('type' => 'checkbox', 'checked' => true)),
-			'<input type="checkbox" checked="checked" />');
+        $this->assertEquals(
+            html('xml', array('id' => '"')),
+            '<xml id="&quot;" />');
 
-		$this->assertEquals(
-			html('input', array('type' => 'checkbox', 'checked' => false)),
-			'<input type="checkbox" />');
+        $this->assertEquals(
+            html('input', array('type' => 'checkbox', 'checked' => true)),
+            '<input type="checkbox" checked="checked" />');
 
-		$this->assertEquals(
-			html('span', array('class' => null), 'foo'),
-			'<span>foo</span>');
-	}
+        $this->assertEquals(
+            html('input', array('type' => 'checkbox', 'checked' => false)),
+            '<input type="checkbox" />');
 
+        $this->assertEquals(
+            html('span', array('class' => null), 'foo'),
+            '<span>foo</span>');
+    }
 
 }
